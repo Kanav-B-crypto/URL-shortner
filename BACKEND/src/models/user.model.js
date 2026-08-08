@@ -5,11 +5,14 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    trim: true,
   },
   email: {
     type: String,
     required: true,
     unique: true,
+    lowercase: true,
+    trim: true,
   },
   password: {
     type: String,
@@ -21,7 +24,7 @@ const userSchema = new mongoose.Schema({
     required: false,
     default: "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp",
   },
-});
+}, { timestamps: true });
 
 userSchema.methods.comparePassword = async function (password) {
   return await bcrypt.compare(password, this.password);

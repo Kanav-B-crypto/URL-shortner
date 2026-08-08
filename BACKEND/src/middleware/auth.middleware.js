@@ -11,6 +11,8 @@ export const authMiddleware = async (req, res, next) => {
         req.user = user
         next()
     } catch (error) {
-        return res.status(401).json({message:"Unauthorized",error})
+        // Log server-side only; the client never sees why the token failed.
+        console.error("Auth failed:", error.name)
+        return res.status(401).json({message:"Unauthorized"})
     }
 }

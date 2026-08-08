@@ -7,6 +7,23 @@ export const errorHandler = (err,req,res,next) => {
     });
   }
 
+  // Unique-index violation (e.g. two concurrent registrations, same email).
+  if (err?.code === 11000) {
+    return res.status(409).json({
+      success: false,
+      message: "User already exists",
+    });
+  }
+
+  // Mongoose schema validation, surfaced as a 400 rather than a 500.
+  if (err?.name === "ValidationError") {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid input",
+    });
+  }
+
+  console.error(err);
   res.status(500).json({
     success: false,
     message: err.message || "Internal Server Error",

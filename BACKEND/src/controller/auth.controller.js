@@ -3,12 +3,12 @@ import { loginUser, registerUser } from "../services/auth.service.js"
 import wrapAsync from "../utils/tryCatchWrapper.js"
 
 
+// Registration creates the account only — the user then signs in explicitly,
+// so no auth cookie is issued here.
 export const register_user = wrapAsync( async (req, res) => {
     const {name, email, password} = req.body
-    const {token,user} = await registerUser(name, email, password)
-    req.user = user
-    res.cookie("accessToken", token, cookieOptions)
-    res.status(200).json({message:"register success"})
+    const {user} = await registerUser(name, email, password)
+    res.status(201).json({user:user,message:"register success"})
 })
 
 export const login_user = wrapAsync( async (req, res) => {
