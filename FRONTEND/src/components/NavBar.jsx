@@ -27,8 +27,9 @@ const Navbar = () => {
         <div className="flex justify-between h-16">
           {/* Left side - App Name */}
           <div className="flex items-center">
-            <Link to="/" className="text-xl font-bold text-gray-800">
-              URL Shortener
+            <Link to="/" className="flex items-center gap-2 text-xl font-bold text-gray-800">
+              <img src="/logo.svg" alt="" className="h-7 w-7" />
+              LinkForge
             </Link>
           </div>
           

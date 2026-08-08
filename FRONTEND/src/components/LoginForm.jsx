@@ -13,7 +13,11 @@ const LoginForm = ({ state, notice }) => {
     const dispatch = useDispatch()
     const auth = useSelector((state) => state.auth)
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e) => {
+        // Fires on button click and on Enter from any field in the form.
+        e.preventDefault();
+        if (loading) return;
+
         setLoading(true);
         setError('');
 
@@ -22,16 +26,15 @@ const LoginForm = ({ state, notice }) => {
             dispatch(login(data.user))
             navigate({to:"/dashboard"})
             setLoading(false);
-            console.log("signin success")
         } catch (err) {
             setLoading(false);
-            setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+            setError(err.message || 'Login failed. Please check your credentials.');
         }
     };
 
     return (
         <div className="w-full max-w-md mx-auto">
-            <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
 
                 {notice && !error && (
@@ -80,7 +83,6 @@ const LoginForm = ({ state, notice }) => {
                     <button
                         className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                         type="submit"
-                        onClick={handleSubmit}
                         disabled={loading}
                     >
                         {loading ? 'Signing in...' : 'Sign In'}
@@ -92,7 +94,7 @@ const LoginForm = ({ state, notice }) => {
                         Don't have an account? <span onClick={() => state(false)} className="text-blue-500 hover:text-blue-700">Register</span>
                     </p>
                 </div>
-            </div>
+            </form>
         </div>
     );
 };

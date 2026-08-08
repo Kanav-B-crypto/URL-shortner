@@ -6,21 +6,31 @@ import { queryClient } from '../main'
 
 const UrlForm = () => {
   
-  const [url, setUrl] = useState("https://www.google.com")
+  const [url, setUrl] = useState("")
   const [shortUrl, setShortUrl] = useState()
   const [copied, setCopied] = useState(false)
   const [error, setError] = useState(null)
   const [customSlug, setCustomSlug] = useState("")
+  const [loading, setLoading] = useState(false)
   const {isAuthenticated} = useSelector((state) => state.auth)
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (loading) return
+
+    setLoading(true)
     try{
       const shortUrl = await createShortUrl(url,customSlug)
       setShortUrl(shortUrl)
-      queryClient.invalidateQueries({queryKey: ['userUrls']})
       setError(null)
+      // Clear the slug so the next submit doesn't reuse it and 409.
+      setCustomSlug("")
+      // Wait for the refetch so the table and the button finish together.
+      await queryClient.invalidateQueries({queryKey: ['userUrls']})
     }catch(err){
       setError(err.message)
+    }finally{
+      setLoading(false)
     }
   }
 
@@ -53,8 +63,9 @@ const UrlForm = () => {
         <button
           onClick={handleSubmit}
           type="submit"
-          className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
-        >Shorten URL
+          disabled={loading || !url}
+          className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        >{loading ? 'Shortening...' : 'Shorten URL'}
         </button>
          {error && (
           <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-md">
