@@ -7,6 +7,7 @@ sign in to keep them in a personal dashboard and track how often each one is cli
 
 - Shorten any URL into a short code
 - Works without an account — anonymous links are created instantly
+- Custom slugs: signed-in users can pick their own alias (e.g. `/my-link`), rejected with `409` if already taken
 - Register / login with JWT authentication delivered via an httpOnly cookie
 - Passwords hashed with bcrypt; never stored or returned in plaintext
 - Personal dashboard listing the links you own
@@ -22,7 +23,7 @@ sign in to keep them in a personal dashboard and track how often each one is cli
 ## Project structure
 
 ```
-LinkForge/
+.
 ├── BACKEND/
 │   ├── app.js                  # Express entry point, middleware, route mounting
 │   └── src/
@@ -54,7 +55,7 @@ Node.js 18+ and a MongoDB database (local or Atlas).
 
 ```bash
 git clone <your-repo-url>
-cd LinkForge
+cd <repo-folder>
 ```
 
 ### 2. Backend
@@ -108,7 +109,7 @@ Open http://localhost:5173.
 | POST | `/api/auth/logout` | public | Clears the cookie. |
 | GET | `/api/auth/me` | required | Returns the authenticated user. |
 | POST | `/api/user/urls` | required | Lists the URLs owned by the caller. |
-| POST | `/api/create` | optional | Shortens a URL. Attributed to the user when signed in. |
+| POST | `/api/create` | optional | Shortens a URL. Body: `url`, plus optional `slug` for a custom alias (signed-in users only). Attributed to the user when signed in. |
 | GET | `/:code` | public | Redirects to the original URL and increments its click count. |
 
 Status codes: `400` invalid input, `401` bad credentials or missing/invalid/expired
@@ -135,7 +136,3 @@ transform, so it is never included in an API response.
 
 CORS is configured for `http://localhost:5173` with credentials enabled. If you run the
 frontend on a different port, update the `origin` in `BACKEND/app.js`.
-
-## License
-
-ISC
